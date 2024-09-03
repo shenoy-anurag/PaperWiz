@@ -1,0 +1,62 @@
+services:
+  db:
+    image: postgres
+    restart: always
+    container_name: postgres
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_DB: paper_wiz
+      POSTGRES_PASSWORD: example
+    volumes:
+      - pgdata:/var/lib/postgresql/data 
+    networks:
+      - wiz_network
+
+#  memcached:
+#    image: memcached:latest
+#    container_name: memcached
+#    command: "-I 15M"
+#    ports:
+#      - "11211:11211"
+#    networks:
+#      - agg_network
+
+  # wiz_server:
+  #   container_name: wiz_server
+  #   build:
+  #     context: .
+  #     dockerfile: wiz_server/Dockerfile
+  #   entrypoint: ./entrypoint.sh
+  #   env_file:
+  #     - ./config/secrets.env
+  #   volumes:
+  #     - ./wiz_server:/app/wiz_server
+  #   networks:
+  #     - wiz_network
+  #   ports:
+  #     - "5005:5005"
+  #   depends_on:
+  #     - db
+
+  frontend:
+    build:
+      context: frontend
+      target: development
+    ports:
+      - 3000:3000
+    volumes:
+      - ./frontend/src:/code/src
+      - /code/node_modules
+    networks:
+      - wiz_network
+    # depends_on:
+      # - backend
+
+volumes:
+  pgdata:
+
+networks:
+  wiz_network:
+    name: wiz_network
+    driver: bridge
