@@ -12,6 +12,22 @@ services:
       - pgdata:/var/lib/postgresql/data 
     networks:
       - wiz_network
+  
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin4_container
+    restart: always
+    ports:
+      - "8888:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: user-name@domain-name.com
+      PGADMIN_DEFAULT_PASSWORD: strong-password
+    networks:
+      - wiz_network
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+    depends_on:
+      - db
 
 #  memcached:
 #    image: memcached:latest
@@ -22,22 +38,22 @@ services:
 #    networks:
 #      - agg_network
 
-  # wiz_server:
-  #   container_name: wiz_server
-  #   build:
-  #     context: .
-  #     dockerfile: wiz_server/Dockerfile
-  #   entrypoint: ./entrypoint.sh
-  #   env_file:
-  #     - ./config/secrets.env
-  #   volumes:
-  #     - ./wiz_server:/app/wiz_server
-  #   networks:
-  #     - wiz_network
-  #   ports:
-  #     - "5005:5005"
-  #   depends_on:
-  #     - db
+  wiz_server:
+    container_name: wiz_server
+    build:
+      context: .
+      dockerfile: wiz_server/Dockerfile
+    entrypoint: ./entrypoint.sh
+    env_file:
+      - ./config/secrets.env
+    volumes:
+      - ./wiz_server:/app/wiz_server
+    networks:
+      - wiz_network
+    ports:
+      - "5005:5005"
+    depends_on:
+      - db
 
   frontend:
     build:
@@ -55,6 +71,7 @@ services:
 
 volumes:
   pgdata:
+  pgadmin-data:
 
 networks:
   wiz_network:
