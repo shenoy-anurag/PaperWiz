@@ -7,6 +7,7 @@ from typing import Text
 import uuid
 # from flask_validator import ValidateEmail, ValidateString, ValidateCountry
 from sqlalchemy import create_engine, Column, String, Integer, ForeignKey, Text, Float, TIMESTAMP, JSON, Table
+from sqlalchemy_serializer import SerializerMixin
 from sqlalchemy.dialects.postgresql import UUID, JSON
 from sqlalchemy.orm import relationship, validates
 from sqlalchemy.sql import func
@@ -25,7 +26,7 @@ paper_tags = Table(
 )
 
 
-class User(db.Model):
+class User(db.Model, SerializerMixin):
     __tablename__ = 'users'
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
@@ -52,7 +53,7 @@ class User(db.Model):
     visualizations = relationship("Visualization", back_populates="user")
 
 
-class Paper(db.Model):
+class Paper(db.Model, SerializerMixin):
     __tablename__ = 'papers'
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
@@ -75,7 +76,7 @@ class Paper(db.Model):
     tags = relationship("Tag", secondary=paper_tags, back_populates="papers")
 
 
-class Journal(db.Model):
+class Journal(db.Model, SerializerMixin):
     __tablename__ = 'journals'
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
@@ -88,7 +89,7 @@ class Journal(db.Model):
     papers = relationship("Paper", back_populates="journal")
 
 
-class Category(db.Model):
+class Category(db.Model, SerializerMixin):
     __tablename__ = 'categories'
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
@@ -101,7 +102,7 @@ class Category(db.Model):
     papers = relationship("Paper", back_populates="category")
 
 
-class Visualization(db.Model):
+class Visualization(db.Model, SerializerMixin):
     __tablename__ = 'visualizations'
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
@@ -116,7 +117,7 @@ class Visualization(db.Model):
     user = relationship("User", back_populates="visualizations")
 
 
-class Tag(db.Model):
+class Tag(db.Model, SerializerMixin):
     __tablename__ = 'tags'
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
